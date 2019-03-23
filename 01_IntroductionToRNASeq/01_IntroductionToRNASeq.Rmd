@@ -1,0 +1,544 @@
+---
+title: "Machine learning in R"
+subtitle: "Basic machine learning concepts"
+author: "Darya Vanichkina"
+date: "March 18, 2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
+    self_contained: false # if true, fonts will be stored locally
+    seal: false # show a title slide with YAML information
+    includes:
+      in_header: "assets/mathjax-equation-numbers.html"
+    nature:
+      beforeInit: ["assets/macros.js","assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9' # alternatives '16:9' or '4:3' or others e.g. 13:9
+      navigation:
+        scroll: false # disable slide transitions by scrolling     
+
+
+---
+
+
+```{r, load_refs, echo=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear", 
+           cite.style = 'authoryear', 
+           style = "markdown",
+           hyperlink = FALSE, 
+           dashed = FALSE)
+myBib <- ReadBib("assets/example.bib", check = FALSE)
+```
+
+class: title-slide
+background-image: url("assets/USydLogo-black.svg"), url("assets/USYDTitle.png")
+background-position: 10% 90%, 100% 50%
+background-size: 160px, 50% 100%
+background-color: #e64626
+
+# .text-shadow[.white[Machine learning in R]]
+## .black[Basic machine learning concepts.]
+## .black[Linear regression.]
+### .black[Author: Darya Vanichkina]
+### .black[Date: March 18, 2019]
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+# If you'd like to create your own title slide, disable xaringan's title slide with the seal = FALSE option of moon_reader.
+#<< # highlight code lines
+# highlight.output=c(1, 3)
+# use local remark.js chakra: libs/remark-latest.min.js
+# options(servr.daemon = TRUE)
+#options(htmltools.dir.version = FALSE)
+# library(pagedown)
+# pagedown::chrome_print("01_IntroductionToMLConcepts.html")
+#pagedown::chrome_print("01_IntroductionToMLConcepts.Rmd")
+```
+
+
+
+---
+
+
+
+
+## Machine learning
+
+- **Machine learning** - also called predictive modelling or statistical learning - is the process of developing a mathematical tool or model that generates an active prediction `r Citep(myBib,"kuhn2013applied")`.
+
+- This makes it distinct from **statistical inference**, where the model must be interpretable and possibly illuminate causal relationships in the data. In ML, we care less about that, and more about the accuracy of our prediction.
+
+### Caveat:
+
+<blockquote>
+If a predictive signal exists in the data, many models will find some degree of that signal regardless of the technique or care placed in developing the model <...> But the best, most predictive models are fundamentally influenced by a modeller with expert knowledge and context of the problem. 
+.right[-- <cite>Kuhn and Johnson 2013</cite>]
+</blockquote>
+
+
+---
+
+## Why R for machine learning?
+
+- R is developed as a language for and by statisticians
+- R has many libraries for ML and data analysis, and new ones are being added everyday; the bioconductor ecosystem also has specialised libraries for bioinformatics 
+- The [tidyverse](https://tidyverse.org) ecosystem and the [rmarkdown](https://bookdown.org/yihui/rmarkdown/) family have enabled reproducible, human-readable R code for reproducible research easy that's easy to read, write and re-run
+- Several "meta-packages" exist for machine learning ([caret](https://topepo.github.io/caret/), [mlr](https://mlr.mlr-org.com/), and the tidymodels family)
+- R has APIs that connect to C, C++, tensorflow, keras etc  
+
+
+## Alternatives:
+- R's primary competitor in the open-source ML space is python, which has [scikit-learn](https://scikit-learn.org/) and other libraries
+- Matlab is closed source. Java/C++/Go/Haskell can be used, but require you to code the specific algorithms you want from scratch. Julia is not "mature"
+
+
+---
+
+## Types of machine learning
+1. **Supervised learning**:
+  - The dataset contains a series of inputs, based on which we are trying to predict a predifined outcome, which we know for the original data in the dataset. The outcome can be numerical (in which case the problem is called regression) or categorical (classification). 
+--
+
+2. **Unsupervised learning**:
+  - No labels are provided, and the algorithm tries to find structure in unlabelled data. Finding groups of similar users (think Netflix) is a classic example of this. 
+--
+
+3. **Semi-supervised learning**:
+  - A combination of the two approaches, where we try to use labels from the data to influence the unlabelled data to identify and annotate new classes in the dataset (aka novelty detection). Example: image clustering + manual annotation of clusters.
+
+--
+4. **Reinforcement learning**:
+  - The learning algorithm performs a task and gets feedback in real time from operating in a real or simulated environment. Examples are elevator scheduling or learning to play a game.
+
+
+
+---
+## Aims of the workshop
+
+- Learners are able to assess whether any of the presented approaches are applicable to their own analysis problems
+- Learners are able to apply the demonstrated methods to their own datasets (if they're appropriate), and to evaluate whether the models are a good fit for their data
+- Learners are more confident in discovering and trying out new methods of interest that they come across in the literature
+
+
+- NOT: "Learners are experts in machine learning and data science!"
+
+
+---
+## "No Free Lunch" theorem
+
+<blockquote>
+Without strong, potentially causal, information about the modeling problem, there is no single model that will always do better than any other model.
+.right[-- <cite>Wolpert 1996</cite>]
+</blockquote>
+
+---
+class: segue-red
+# Basic concepts and key terms
+
+
+
+
+
+
+---
+## Terminology
+1. The main goal of the machine learning process is to find an algorithm $f(x)$ that most accurately predicts future values $y$ based on a set of inputs *X*. 
+--
+
+2. The terms `sample`, `data point`, `observation`, and `instance` refer to a single independent unit of study, i.e. a customer, patient, compound, email, etc. The term `sample` can also be used (next slides) to describe a set of entries, when discussing a training and test sample. 
+
+--
+3. The `inputs` **X**, which can also be called `predictors`, `independent variables`, `attributes` or `descriptors` are used as inputs for the prediction equation. 
+
+--
+4. `Outcome`, `dependent variable`, `target`, `class`, or `response` - what you're trying to predict (usually more applicable in the context of supervised learning). 
+
+--
+
+The "predicts future values" phrase here is very important: it's more important for our function to predict the future outcome accurately, not to fit the existing data as well as possible! This ability to predict the future well is called **generalizability**, whereas a situation when the algorithm fits our existing data very well, but doesn't generalise is called **overfitting**. 
+
+
+
+
+
+
+---
+## Training and testing
+
+To enable us to assess how generalizable our model is, we can split the data into a training and testing set:
+
+- The training set is used to train the model, and to tune the (hyper)parameters
+- The testing or validation set is witheld during training, and is used once we have chosen a final model to estimate the prediction error (also known as generalisation error).
+
+--
+
+We expect/hope that the prediction error determined using the testing set is the same as what would be characteristic of completely new data that we would need to use the model to make a prediction for. 
+
+--
+
+.blockquote[
+### But: small datasets, complex models
+- use of a test set may not be warranted, and instead approaches with distinct resampling methods may be more appropriate
+]
+
+
+---
+## Training and testing: practical implementation
+
+- The relative proportions of the training and testing set depend on the total of number of observations, and the variability observed in the data. The tradeoff to be considered is:
+
+--
+
+  - if there is too much data in the training set, the assessment of the prediction error will be carried out on a very small test set - therefor we might overfit the model, finding a formula that fits the existing data very well, but generalizes very poorly
+  - if there is too much data in the testing set, this means that we might not have enough data in the training set to accurately estimate the model parameters - so the model won't be very accurate
+
+--
+
+- Some commonly used cutoffs include:
+  - 60% training / 40% testing
+  - 70% training / 30% testing
+  - 80% training / 20% testing
+
+
+
+
+
+
+
+---
+## Sampling approaches: 50 men, 50 women in dataset
+
+--
+### Random
+- does not control for any attributes in the data
+  - 60/40 sampling: possible to end up with 50 men and 10 women in training dataset
+
+--
+
+### Stratified
+- controls for a specific factor in your data, for example gender
+  - 60/40 sampling: will end up with 30 men and 30 women in training dataset. For continous variables, sampling can be carried out within the quartiles  to preserve the distribution
+
+--
+
+### Future vs past 
+- if we need to predict values for future car prices, we might want to use this year's models as test, and use last 20 years' models as train
+
+
+
+
+---
+## Example of sampling using rsample
+
+
+.pull-left[
+
+```{r samplingexample, eval=FALSE}
+set.seed(42)
+split_cars <- initial_split(mtcars, 
+                            strata = "gear",
+                            prop = 0.7)
+train_cars <- training(split_cars) 
+test_cars <- testing(split_cars)
+
+ggplot(train_cars, aes(x = mpg)) + 
+  geom_line(stat = "density",
+            trim = TRUE) + 
+  geom_line(data = test_cars,
+            stat = "density",
+            trim = TRUE,
+            col = "blue") +
+  theme_minimal()
+```
+]
+
+.pull-right[
+```{r samplingexample-out, ref.label="samplingexample", echo=FALSE}
+
+```
+]
+
+
+
+
+
+
+---
+## Model parameter tuning 
+
+Some models (such as kNN) have parameters.`Model tuning` is the process of identifying the optimal value of a particular model parameter.
+
+1. Define a set of candidate parameter values
+2. For each set:
+  1. Resample data (next slide)
+  2. Fit model
+  3. Predict "hold-outs"
+3. Aggregate results into a `performance profile`
+4. Decide on the final tuning parameters.
+5. Refit model on training set with parameters decided upon in (4)
+
+
+
+
+---
+## Resampling: k-fold cross-validation
+- randomly partition training samples into k sets of approximately equal sizes
+- fit model using all sets except the first one
+- estimate perfomance using held out (first set)
+- repeat k times, holding out each set in turn
+
+.center[ 
+![CV](assets/crossvalidation.png)
+]
+
+---
+## Other resampling techniques: GCV and MC/LGO
+
+- generalised cross-validation $GCV = \frac{1}{n} \sum_{i=1}^{n}(\frac{y_i - \hat{y_i}}{1 - df/n})^2$ (Golub 1979), where 
+  - $y_i$ is the ith in the training set outcome
+  - $\hat{y_i}$ is the model prediction for that outcome
+  - df - degrees of freedom of model; n - number of samples
+- repeated training/test splits (aka leave-group-out or Monte Carlo)
+  - multiple splits of the data
+  - unlike k-fold CV, same data point can be held out from more than one cycle
+  - larger number of repetitions
+  
+  
+---
+## Other resampling techniques: bootstrap
+
+.pull-left[
+- Random sample of the data *with replacement*
+- Bootstrap sample size is *the same* as original dataset
+- Some samples will be represented multiple times, others not at all ("out-of-bag")
+- Performance on "out-of-bag" at every cycle is reported
+- Can have biased error with datasets where $n < 500$
+]
+
+.pull-right[
+![bootstrap](assets/bootstrap.png)
+.right[
+`r Citet(myBib,"raschka2018model")`
+]
+]
+
+
+
+
+---
+class: segue-red
+# Linear regression
+
+---
+## Linear regression
+
+- Linear regression is a simple, intuitive approach for supervised learning. As we mentioned before, regression is used when we are trying to predict a quantitative variable based on one or more quantitative or categorical variables. 
+
+.content-box-yellow[
+- The formula for a basic linear regression looks like this: $\hat{y} = \hat{\beta_0} + \hat{\beta}_1x_1 + \hat{\beta}_2x_2 + ... \hat{\beta}_Nx_N$
+]
+
+- Here, $x_1$, $x_2$ etc are variables that capture features we know about (such as zoning category, neighborhood, number of floors, living area etc, for the Ames housing data, for example), and the beta values are weights that we use to estimate their influence on the prediction. 
+
+---
+## Sample data for linear regression: mpg
+### Fuel economy data from 1999 and 2008 for 38 popular models of car
+
+We will use example data from the ggplot package:
+
+```{r}
+mpg %>% head()
+```
+
+---
+## Visualise linear regression
+
+.pull-left[
+```{r visLinRegCode, eval=F}
+mpg %>% ggplot(aes(x = cty, y = hwy)) + 
+  geom_jitter( aes(col = drv), alpha = 0.7) + 
+  geom_smooth(method = lm, lty = 2, size = 0.5) +
+  theme_minimal()
+```
+]
+
+.pull-right[
+```{r visLinRegPlot, echo=F}
+mpg %>% ggplot(aes(x = cty, y = hwy)) + 
+  geom_jitter( aes(col = drv), alpha = 0.7) + 
+  geom_smooth(method = lm, lty = 2, size = 0.5) +
+  theme_minimal()
+```
+]
+
+
+
+
+
+---
+## Model performace for regression: loss functions
+
+- A `loss function` or `cost function` $L(y, f(x))$ measures the cost of predicting $f(\textbf{x})$ when the truth is $y$.
+
+- `MSE`: Mean squared error 
+    - The average of the squared error $MSE=\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y_i})^2$
+    - The squared component results in larger errors having larger penalties. 
+    - Along with RMSE is the most common error metric to use. 
+--
+
+- `MAE`: Mean absolute error. 
+    - Similar to MSE but rather than squaring, it just takes the mean absolute difference between the actual and predicted values
+    - $MAE=\frac{1}{n}\sum_{i=1}^{n}(|y_i-\hat{y_i}|)$
+--
+
+- `RMSE`: Root mean squared error. 
+    - This simply takes the square root of the MSE metric $\sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y_i})^2}$
+    - Error ends up being in the same units as response variable
+---
+## Model evaluation for regression (continued)
+
+- `RMSLE`: Root mean squared logarithmic error. 
+    - Performs a `log()` transformation on the actual and predicted values prior to computing the difference
+    - $\sqrt{\frac{1}{n}\sum_{i=1}^{n}(log(y_i + 1) - log(\hat{y_i}))^2}$
+--
+
+- Mean residual deviance
+    - a measure of goodness-of-fit of the model being evaluated when compared to the null model (intercept only).
+    - If the response variable distribution is gaussian, then it is equal to MSE. When not, it usually gives a more useful estimate of error.
+    - Different formula for different distributions
+--
+- <s>$R^2$ - coefficient of determination </s>
+    - proportion of information explained by model; measure of *correlation*, not accuracy!
+    - Can be calculaed in different ways; see `r Citet(myBib,"kvaalseth1985cautionary")`
+
+---
+## Bias-variance tradeoff
+
+We can define the expected prediction error for a new input point/patient/subject $\textbf{X}_0$ as 
+
+.content-box-yellow[
+$$E(y_{0}- \hat{f}(x_0))^2 = Var(\hat{f}(x_0)) + [Bias(\hat{f}(x_0))]^2 + \epsilon$$
+]
+
+  - $E(y_{0}- \hat{f}(x_0))^2$ - expected test MSE:
+      - avg test MSE if we repeatedly estimate $f$ using a large number of training sets, and tested each at $x_0$
+  - `variance` - $Var(\hat{f}(x_0)) == \sigma^2$ - amount by which $\hat{f}$ would change if we estimated it using a different training set; more flexible methods can have higher variances
+  -  `bias` - error introduced by approximating a real-life problem with a simpler model; more flexible methods have lower bias
+
+
+
+
+
+---
+## Bias-variance tradeoff
+
+.pull-left[
+![biasvar2](assets/BiasVar.png)
+
+
+.right[`r Citep(myBib,"raschka2018model")`]
+]
+
+--
+
+.pull-right[
+![biasvar2](assets/BiasVar2.png)
+]
+
+```{r echo=F, fig.height=6, include=F, echo=F}
+mean <- 2 #FIXME
+MSE <- function(estimate, mean) {return(sum((estimate - mean)^2) / length(estimate))}
+n <- 100
+shrink <- seq(0,0.5, length=n)
+mse <- numeric(n)
+bias <- numeric(n)
+variance <- numeric(n)
+
+for (i in 1:n) {mse[i] <- MSE((1 - shrink[i]) * rnorm(20000, mean), mean)
+bias[i] <- mean * shrink[i]
+variance[i] <- (1 - shrink[i])^2
+}
+plot(shrink, mse, xlab='Model complexity', ylab='Prediction error', type='l', col='orange', lwd=3, lty=1, ylim=c(0,1.2))
+lines(shrink, bias^2, col='red', lwd=3, lty=2)
+lines(shrink, variance, col='blue', lwd=3, lty=2)
+legend(0.02,0.6, c('variance', 'bias^2', 'MSE'), col=c('red', 'blue', 'orange'), lwd=rep(3,3), lty=c(2,2,1))
+```
+
+
+---
+## Model types and the bias/variance tradeoff (generalisation)
+- Models such as GLMs naturally have high bias
+  - because very few things in the world are truly linear
+--
+
+- Models based on trees, neural networks, nearest neighbors (more flexible) naturally have high variance
+  - i.e. they are sensitive to the "starting" dataset you're using to train with
+
+```{r include = FALSE, echo = FALSE}
+# include in iteration 2
+# # resampling procedure
+# cv <- trainControl(method = "repeatedcv", number = 10, repeats = 10)
+# # define grid search
+# hyper_grid <- expand.grid(k = seq(2, 150, by = 2))
+# # perform grid search with caret
+# knn_fit <- train(
+#   x ~ y, 
+#   data = df, 
+#   method = "knn", 
+#   trControl = cv, 
+#   tuneGrid = hyper_grid
+#   )
+```
+
+
+---
+## Meet the data: Ames housing
+
+Take 20 minutes to explore the data. Compare the processed and unprocessed versions to see what processing has been done by the developer of the AmesHousing library.s
+
+```{r loadData, eval =F}
+library(AmesHousing)
+library(tidyverse)
+ameshousing <- AmesHousing::make_ames()
+
+# Read in the uncleaned data. 
+ameshousing2 <- 
+  read_csv("data/AmesHousing.csv", guess_max=1500)
+
+```
+
+
+
+
+
+---
+## References
+
+```{r, results = "asis", echo=FALSE}
+PrintBibliography(myBib)
+# If you have a long list of references, and want to split them over multiple slides, you can use the `start` and `end` arguments to the `PrintBibliography()` function.  E.g.
+# .small[
+#`PrintBibliography(bib, start=1, end=7)`
+#]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
