@@ -1,40 +1,33 @@
----
-title: "An introduction to RNA seq data analysis"
-subtitle: "RNA seq 1"
-author: "Darya Vanichkina"
-date: "March 23, 2019"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    css: ["default", "assets/sydney-fonts.css", "assets/sydney.css"]
-    self_contained: false # if true, fonts will be stored locally
-    seal: false # show a title slide with YAML information
-    includes:
-      in_header: "assets/mathjax-equation-numbers.html"
-    nature:
-      beforeInit: ["assets/macros.js","assets/remark-zoom.js", "https://platform.twitter.com/widgets.js"]
-      highlightStyle: github
-      highlightLines: true
-      countIncrementalSlides: false
-      ratio: '16:9' # alternatives '16:9' or '4:3' or others e.g. 13:9
-      navigation:
-        scroll: false # disable slide transitions by scrolling     
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>An introduction to RNA seq data analysis</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Darya Vanichkina" />
+    <meta name="date" content="2019-03-23" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } },
+        "HTML-CSS": { scale: 60 },
+      });
+    </script>
+    <style>
+    .mjx-mrow a {
+      color: black;
+      pointer-events: none;
+      cursor: default;
+    }
+    </style>
+    <link rel="stylesheet" href="assets/sydney-fonts.css" type="text/css" />
+    <link rel="stylesheet" href="assets/sydney.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
 
 
----
 
 
-```{r, load_refs, echo=FALSE, cache=FALSE}
-library(RefManageR)
-BibOptions(check.entries = FALSE, 
-           bib.style = "authoryear", 
-           cite.style = 'authoryear', 
-           max.names = 2,
-           style = "markdown",
-           hyperlink = FALSE, 
-           dashed = FALSE)
-myBib <- ReadBib("assets/example.bib", check = FALSE)
-```
 
 class: title-slide
 background-image: url("assets/USydLogo-black.svg"), url("assets/USYDTitle.png")
@@ -47,18 +40,7 @@ background-color: #e64626
 ### .black[Author: Darya Vanichkina]
 ### .black[Date: March 23, 2019]
 
-```{r setup, include=FALSE}
-library(tidyverse)
-# If you'd like to create your own title slide, disable xaringan's title slide with the seal = FALSE option of moon_reader.
-#<< # highlight code lines
-# highlight.output=c(1, 3)
-# use local remark.js chakra: libs/remark-latest.min.js
-# options(servr.daemon = TRUE)
-#options(htmltools.dir.version = FALSE)
-# library(pagedown)
-# pagedown::chrome_print("01_IntroductionToMLConcepts.html")
-#pagedown::chrome_print("01_IntroductionToMLConcepts.Rmd")
-```
+
 
 
 ---
@@ -80,7 +62,7 @@ library(tidyverse)
 ## Central dogma of molecular biology
 
 .center[
-<img src="assets/tracy1.png" alt="tracy1" width="650"/>
+&lt;img src="assets/tracy1.png" alt="tracy1" width="650"/&gt;
 ]
 
 .right[
@@ -90,17 +72,17 @@ library(tidyverse)
 
 
 
-<!-- <blockquote> -->
-<!-- If a predictive signal exists in the data, many models will find some degree of that signal regardless of the technique or care placed in developing the model <...> But the best, most predictive models are fundamentally influenced by a modeller with expert knowledge and context of the problem.  -->
-<!-- .right[-- <cite>Kuhn and Johnson 2013</cite>] -->
-<!-- </blockquote> -->
+&lt;!-- &lt;blockquote&gt; --&gt;
+&lt;!-- If a predictive signal exists in the data, many models will find some degree of that signal regardless of the technique or care placed in developing the model &lt;...&gt; But the best, most predictive models are fundamentally influenced by a modeller with expert knowledge and context of the problem.  --&gt;
+&lt;!-- .right[-- &lt;cite&gt;Kuhn and Johnson 2013&lt;/cite&gt;] --&gt;
+&lt;!-- &lt;/blockquote&gt; --&gt;
 
 ---
 
 ## RNA sequencing: overview
 
 .center[
-<img src="assets/tracy2.png" alt="tracy1" width="650"/>
+&lt;img src="assets/tracy2.png" alt="tracy1" width="650"/&gt;
 ]
 
 .right[
@@ -112,7 +94,7 @@ library(tidyverse)
 ## RNA sequencing: adapters and difference from genomic DNA
 
 .center[
-<img src="assets/tracy3.png" alt="tracy3" width="650"/>
+&lt;img src="assets/tracy3.png" alt="tracy3" width="650"/&gt;
 ]
 
 .right[
@@ -127,19 +109,19 @@ class: segue-red
 ## Generic roadmap for RNA-seq computational analyses
 
 .center[
-<img src="assets/mortazavi.png" alt="mortazavi.png" width="750"/>
+&lt;img src="assets/mortazavi.png" alt="mortazavi.png" width="750"/&gt;
 ]
 
 .right[
-`r Citet(myBib,"conesa2016survey")` 
+Conesa, Madrigal, Tarazona, Gomez-Cabrero, Cervera, McPherson, Szcześniak, Gaffney, Elo, Zhang, and others (2016) 
 ]
 
 ---
 ## First question to ask: WHY are you sequencing????
 
-<blockquote>
+&lt;blockquote&gt;
 What do you hope to find? What follow-up experiments do you plan to do **after** the sequencing?
-</blockquote>
+&lt;/blockquote&gt;
 
 --
 
@@ -156,9 +138,9 @@ RNA-seq can be used to carry out accurate analysis of:
 
 --
 .center[
-<blockquote>
+&lt;blockquote&gt;
 But all of these cannot be accurately analysed at the same time in ONE SINGLE experiment!!!
-</blockquote>
+&lt;/blockquote&gt;
 ]
 
 
@@ -167,9 +149,9 @@ But all of these cannot be accurately analysed at the same time in ONE SINGLE ex
 
 The main equation for any RNA-seq experiment is:
 
-<blockquote>
+&lt;blockquote&gt;
 $X_dollars = #replicates x library_prep_cost + #replicates x sequencing_depth_per_replicate ~ sequencing_length
-</blockquote>
+&lt;/blockquote&gt;
 
 Some analyses are impossible to do without sufficient library depth:
 
@@ -207,11 +189,11 @@ Some analyses are impossible to do without sufficient library depth:
 ## How much of an effect could library depth vs number of replicates have?
 
 .center[
-<img src="assets/mortazavi2.png" alt="mortazavi2.png" width="550"/>
+&lt;img src="assets/mortazavi2.png" alt="mortazavi2.png" width="550"/&gt;
 ]
 
 .right[
-`r Citet(myBib,"conesa2016survey")`
+Conesa Madrigal, et al. (2016)
 ]
 
 ???
@@ -243,7 +225,7 @@ Important: if you expect to have batch effects (samples prepared on different da
 
 1. MINIMUM 3 per condition, NO discussions about it... but better ...
 
-2. ... see `r Citet(myBib, c("conesa2016survey", "schurch2016many"), max.names = 2)` for additional discussion, or ...
+2. ... see Conesa Madrigal, et al. (2016); Schurch, Schofield, Gierliński, Cole, Sherstnev, Singh, Wrobel, Gharbi, Simpson, Owen-Hughes, and others (2016) for additional discussion, or ...
 
 3. (best) use a tool such as [RNASeqPower](https://bioconductor.org/packages/release/bioc/html/RNASeqPower.html) to calculate formally
 
@@ -272,17 +254,17 @@ Important: if you expect to have batch effects (samples prepared on different da
 ## Fastq format
 
 .center[
-<img src="assets/fastq.png" alt="fastq.png" width="900"/>
+&lt;img src="assets/fastq.png" alt="fastq.png" width="900"/&gt;
 ]
 
-- The quality at each position is captured as $Q = -10log_{10}p$, where p is the probability the base was called incorrectly. 
+- The quality at each position is captured as `\(Q = -10log_{10}p\)`, where p is the probability the base was called incorrectly. 
 
 --
 
 - Several different encodings have been used throughout the years to report on this by Illumina (thanks!), and the [Wikipedia](https://en.wikipedia.org/wiki/FASTQ_format) page is the best place to figure out which is which.
 
 .center[
-<img src="assets/fastq2.png" alt="fastq2.png" width="550"/>
+&lt;img src="assets/fastq2.png" alt="fastq2.png" width="550"/&gt;
 ]
 
 ???
@@ -295,7 +277,7 @@ Challenge: Which format is the data coming from?
 .pull-left[
 
 #### Normal data:
-<img src="assets/goodillumina.png" alt="fastq2.png" width="550"/>
+&lt;img src="assets/goodillumina.png" alt="fastq2.png" width="550"/&gt;
 
 ]
 
@@ -303,7 +285,7 @@ Challenge: Which format is the data coming from?
 
 #### Bad data:
 
-<img src="assets/badillumina.png" alt="fastq2.png" width="550"/>
+&lt;img src="assets/badillumina.png" alt="fastq2.png" width="550"/&gt;
 
 ]
 
@@ -329,7 +311,7 @@ Challenge: Which format is the data coming from?
 - [samtools](http://www.htslib.org/doc/samtools.html) is a suite of tools for working with sam/bam/cram files
 - [full documentation](https://samtools.github.io/hts-specs/SAMv1.pdf)
 
-<img src="assets/sambam.png" alt="fastq2.png" width="1000"/>
+&lt;img src="assets/sambam.png" alt="fastq2.png" width="1000"/&gt;
 
 
 .right[
@@ -353,7 +335,7 @@ Challenge: Which format is the data coming from?
 @SQ	SN:chr4	LN:190214555
 @SQ	SN:chr5	LN:181538259
 @SQ	SN:chr6	LN:170805979
-<... more chromosomes and lengths>
+&lt;... more chromosomes and lengths&gt;
 @PG	ID:STAR	PN:STAR	VN: # etc etc
 @CO	user command line:...
 ```
@@ -374,7 +356,7 @@ Challenge: Which format is the data coming from?
 
 .pull-right[
 .center[
-<img src="assets/ratRNA.png" alt="ratRNA.png" width="400"/>
+&lt;img src="assets/ratRNA.png" alt="ratRNA.png" width="400"/&gt;
 ]
 ]
 
@@ -432,8 +414,15 @@ Comment on what tools and approaches may be used to do this
 .pull-left[
 Condition 1:
 
-```{r echo=F}
-print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4", "Sample5", "Sample6"), Gene1 = c(4,6,1,4,6,1), Gene2 = c(400,600,100,400,600,100)))
+
+```
+##   ReplicateSample Gene1 Gene2
+## 1         Sample1     4   400
+## 2         Sample2     6   600
+## 3         Sample3     1   100
+## 4         Sample4     4   400
+## 5         Sample5     6   600
+## 6         Sample6     1   100
 ```
 
 
@@ -443,8 +432,15 @@ print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4",
 
 Condition 2:
 
-```{r echo=F}
-print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4", "Sample5", "Sample6"), Gene1 = 2* c(4,6,1,4,6,1), Gene2 = 2* c(400,600,100,400,600,100)))
+
+```
+##   ReplicateSample Gene1 Gene2
+## 1         Sample1     8   800
+## 2         Sample2    12  1200
+## 3         Sample3     2   200
+## 4         Sample4     8   800
+## 5         Sample5    12  1200
+## 6         Sample6     2   200
 ```
 
 ]
@@ -466,7 +462,7 @@ print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4",
 
 3. These parameters **must** be reported in the methods section of your manuscript, and analysis scripts should be deposited on github.
 
-4. If you are using a GUI like Galaxy to obfuscate the command-line, you still need to dig into all of the dropdown menu options, to figure out which default parameters are being used to run your analyses, and report these. 
+4. If you are using a GUI like Galaxy to obfuscate the command-line, you still need to dig into all of the dropdown menu options, to figure out which default parameters are being used to run your analyses, and report these. Quite quickly, using the command line becomes easier/faster than digging through and debugging menu options.
 ]
 
 
@@ -476,28 +472,8 @@ print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4",
 ]
 ]
 
-
-???
-Mention that obfuscation and digging quickly grow old, and most people move to the command line for the greater power and flexibility, and lower hassle.
-
-
-
 ---
-## Statistical tests for differential expression
-
-The most widely used libraries for differential expression analysis using RNA-seq either:
-
-### 1. Use the negative binomial distribution to model the count data 
-
-- edgeR
-- DESeq2
-- baySeq
-- EBSeq
-- BBSeq
-
-### 2. Transform the counts to be normally distributed, and then use normal-based methods
-
-- limma voom
+## 
 
 
 ---
@@ -508,32 +484,119 @@ The most widely used libraries for differential expression analysis using RNA-se
 3. Special consideration (using a design formula) had to be given to identify only things enriched between [specific_pulldown - input], and not [scrambled_pulldown - input].
 4. HeLa cells, 3 replicates each, paired-end 100 nt strand-specific sequencing
 
-`r Citep(myBib,"choudhary2018identification")`
+(Choudhary, Vanichkina, Ender, Crawford, Baillie, Calcino, Ru, and Taft, 2018)
 
 
 
 ---
 ## References
 
-```{r, results = "asis", echo=FALSE}
-PrintBibliography(myBib)
-# If you have a long list of references, and want to split them over multiple slides, you can use the `start` and `end` arguments to the `PrintBibliography()` function.  E.g.
-# .small[
-#`PrintBibliography(bib, start=1, end=7)`
-#]
-```
+Choudhary, A, D. P. Vanichkina, et al. (2018). "Identification of
+miR-29b targets using 3-cyanovinylcarbazole containing mimics".
+In: _RNA_ 24.4, pp. 597-608.
 
+Conesa, A, P. Madrigal, et al. (2016). "A survey of best practices
+for RNA-seq data analysis". In: _Genome biology_ 17.1, p. 13.
 
+Schurch, N. J, P. Schofield, et al. (2016). "How many biological
+replicates are needed in an RNA-seq experiment and which
+differential expression tool should you use?" In: _Rna_ 22.6, pp.
+839-851.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="assets/macros.js"></script>
+<script src="assets/remark-zoom.js"></script>
+<script src="https://platform.twitter.com/widgets.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"navigation": {
+"scroll": false
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
 
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
 
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
 
-
-
-
-
-
-
-
-
-
-
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
