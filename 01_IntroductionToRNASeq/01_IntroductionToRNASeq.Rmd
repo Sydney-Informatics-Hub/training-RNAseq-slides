@@ -86,14 +86,8 @@ library(tidyverse)
 .right[
 *Tracy Chew*
 ]
----
 
 
-
-<!-- <blockquote> -->
-<!-- If a predictive signal exists in the data, many models will find some degree of that signal regardless of the technique or care placed in developing the model <...> But the best, most predictive models are fundamentally influenced by a modeller with expert knowledge and context of the problem.  -->
-<!-- .right[-- <cite>Kuhn and Johnson 2013</cite>] -->
-<!-- </blockquote> -->
 
 ---
 
@@ -222,20 +216,35 @@ Note 70 aligned reads for the gene in the effect size comparison
 ---
 ## What is a replicate?
 
-- Technical replicate: FIXME
-- Biological replicate: FIXME
-
+--
+- Technical replicate: 
+  - same cell line
+  - same dish
+  - same iPSC/ESC clone
+  - typically, Pearson correlation coefficient > 0.9
+  - sometimes: same libary, different flow cells
 
 --
 
-Batch effects: FIXME
+- Biological replicate: 
+  - different animals
+  - different iPSC lines from different donors
+  - no clear filter for correlation coefficient, but usually < 0.9
+
+---
+## Batch effects
+
+  - differences in baseline between replicate samples prepared under different conditions
+  - can be:
+    - obvious: control for
+    - hidden: EDA
 
 --
 
-Important: if you expect to have batch effects (samples prepared on different days, for example), ENSURE you have all conditions you expect to use in a differential analysis in EVERY batch (for example, treatment and control, every time you do the experiment).
+.blockquote[ Important: 
 
-
-
+If you expect to have batch effects (samples prepared on different days, for example), ENSURE you have all conditions you expect to use in a differential analysis in EVERY batch (for example, treatment and control, every time you do the experiment).
+]
 
 ---
 
@@ -256,6 +265,17 @@ Important: if you expect to have batch effects (samples prepared on different da
 4. Stranded vs unstranded 
 5. poly-A selected vs total RNA
 
+
+---
+## Experimental design
+
+.center[
+<img src="assets/auer.jpg" alt="auer.png" width="650"/>
+] 
+
+.right[
+`r Citep(myBib,"auer2010statistical")`
+]
 ---
 ## Basic analysis ( * today)
 
@@ -303,7 +323,7 @@ Challenge: Which format is the data coming from?
 
 #### Bad data:
 
-<img src="assets/badillumina.png" alt="fastq2.png" width="550"/>
+<img src="assets/badillumina.png" alt="fastq3.png" width="550"/>
 
 ]
 
@@ -481,6 +501,15 @@ print(data.frame(ReplicateSample = c("Sample1", "Sample2", "Sample3", "Sample4",
 Mention that obfuscation and digging quickly grow old, and most people move to the command line for the greater power and flexibility, and lower hassle.
 
 
+---
+## Note
+
+.blockquote[
+*To consult the <s>statistician</s> bioinformatician after an experiment is finished is often merely to ask him to conduct a post mortem examination. He can perhaps say what the experiment died of.*
+]
+.right[
+Sir Ronald Fisher (1890-1962)
+]
 
 ---
 ## Statistical tests for differential expression
@@ -495,10 +524,26 @@ The most widely used libraries for differential expression analysis using RNA-se
 - EBSeq
 - BBSeq
 
-### 2. Transform the counts to be normally distributed, and then use normal-based methods
+### 2. Transform the counts to be normally distributed using precision weights, and then use normal-based methods
 
 - limma voom
 
+???
+Limma:
+-  Obtain variance estimates for each observation using mean-var trend.
+- Assign inverse variance weights to each observation.
+- Weights remove mean-variance trend from the data.
+
+---
+## Roadmap for RNA-seq computational analyses
+
+.center[
+<img src="assets/mortazavi.png" alt="mortazavi.png" width="750"/>
+]
+
+.right[
+`r Citet(myBib,"conesa2016survey")` 
+]
 
 ---
 ## The study
